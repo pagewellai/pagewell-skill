@@ -11,7 +11,7 @@ set -euo pipefail
 # looking at the template in the source repository, not at a published copy.
 REPO_SLUG="pagewellai/pagewell-skill"
 BRANCH="main"
-VERSION="8244ec3"
+VERSION="761e692"
 
 BIN_DIR="${PAGEWELL_BIN_DIR:-$HOME/.local/bin}"
 BASE_URL="https://raw.githubusercontent.com/$REPO_SLUG/$BRANCH"

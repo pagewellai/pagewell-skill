@@ -67,18 +67,3 @@ code or completes a payment for you — both happen in your own browser.
 | `references/templates.md` | picking, writing and changing a template |
 | [pagewell.ai/docs](https://pagewell.ai/docs) | the product documentation |
 | [pagewell.ai/pricing](https://pagewell.ai/pricing) | plans and limits |
-
-## This is a build artifact
-
-There is no source code here. Everything in this repository is generated from
-the `pagewell` repository and replaced wholesale on every publish, so a patch
-sent here cannot survive the next one. `MANIFEST` records the exact source
-commit each file was built from.
-
-Issues and pull requests belong upstream.
-
-| | |
-|---|---|
-| Version | `8244ec3` |
-| Source commit | `8244ec3d7418125b83b54810ce51dff2a3192678` |
-| Published | 2026-09-13T03:59:29Z |
