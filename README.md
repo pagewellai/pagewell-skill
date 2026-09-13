@@ -19,8 +19,40 @@ This repository **is** the skill — `SKILL.md` sits at its root and the
 reads `SKILL.md`-style skills can use the same clone; the CLI it calls is the
 one the installer puts on your `PATH`.
 
-To update, `git pull` in that directory and run the installer again — the
-skill text and the binary are published together and always match.
+## Updating
+
+```bash
+pagewell upgrade            # pulls the bundle above (if that is how it was installed) and swaps the binary
+pagewell upgrade --check    # just say whether there is a newer version
+```
+
+The skill text and the binary are published together and always match, so
+`upgrade` updates both: it fast-forwards the clone and re-runs the installer,
+which verifies the new binary against `bin/SHA256SUMS` before putting it on
+your `PATH`. A copy installed with the one-line `curl` below has no clone
+to pull — `upgrade` then replaces the binary only and says so.
+
+You do not have to remember to check. Every command that talks to
+pagewell.ai learns the current version from the response, and when a newer one
+exists it says so once a day on stderr — never on stdout, so `--json` output
+stays clean. `pagewell doctor` reports it too (`update.available`). Set
+`PAGEWELL_NO_UPDATE_NOTICE=1` to silence the reminder.
+
+Older versions keep working: the API only ever adds fields, and the server
+never refuses a request because of the CLI's version. When a version is older
+than the oldest one we still support, the reminder becomes insistent (every
+run, `update.required` in `doctor`) but nothing breaks.
+
+## Releases
+
+Every publish is a release with a [semver](https://semver.org) tag, here and on
+the source repository: `vMAJOR.MINOR.PATCH`. A patch bump is fixes and text;
+a minor bump adds commands, flags or fields; a major bump is reserved for the
+day an old CLI genuinely cannot be served — there has been none. `main` is
+always the latest release; `git checkout v0.3.1` gives you exactly what was
+published under that number, binaries included. What changed is in
+[`CHANGELOG.md`](CHANGELOG.md); where it came from is in `MANIFEST` and
+`version.json`.
 
 ## Install only the CLI
 
@@ -65,5 +97,6 @@ code or completes a payment for you — both happen in your own browser.
 | `references/cli.md` | every command, flag and JSON shape |
 | `references/errors.md` | the error codes (a fixed enum, never translated) |
 | `references/templates.md` | picking, writing and changing a template |
+| `CHANGELOG.md` | what each release changed |
 | [pagewell.ai/docs](https://pagewell.ai/docs) | the product documentation |
 | [pagewell.ai/pricing](https://pagewell.ai/pricing) | plans and limits |

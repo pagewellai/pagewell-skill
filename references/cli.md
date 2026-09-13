@@ -9,8 +9,37 @@ error codes are a fixed enum that is **never translated**.
 pagewell doctor [--json]
 ```
 
-Returns `{version, endpoint, reachable, authenticated, project_config, credentials_path}`.
+Returns `{version, endpoint, reachable, authenticated, project_config, credentials_path, update}`.
 If `reachable` is false, check `--endpoint` before anything else.
+
+`update` is `{current, latest, min, available, required}`: `available` means a
+newer release exists; `required` means this copy is older than the oldest
+version still supported — commands keep working, but upgrade before going on.
+`latest` is absent when the server has not looked yet; then nothing is implied.
+
+## upgrade
+
+```
+pagewell upgrade [--check] [--force] [--json]
+pagewell version [--json]
+```
+
+Updates to the latest release. When this copy was installed from the skill
+bundle (a `git clone` of pagewell-skill), it fast-forwards that clone and
+re-runs its `scripts/install.sh`, so **SKILL.md and the binary move together**;
+the result says `skill_changed: true` when the skill text or references changed
+— re-read them before continuing. Installed some other way, it downloads the
+binary for this machine, verifies it against `bin/SHA256SUMS`, and replaces
+itself; the result then says `method: "binary"`.
+
+`--check` only reports (`{current, latest, min, available, required}`) and
+never changes anything. Versions are semver tags (`v0.3.1`); `version` prints
+the running one.
+
+You do not need to poll: every command that reaches the server is told the
+current version in the response, and once a day (every run when below the
+supported floor) a line goes to **stderr** — stdout stays JSON under `--json`.
+`PAGEWELL_NO_UPDATE_NOTICE=1` silences it.
 
 ## auth
 
@@ -130,7 +159,7 @@ what you need to relay to the author.
 
 ```
 pagewell share create [--mode public|unlisted|code|password]
-                      [--expire 7d] [--allow copy,download,fork,print]
+                      [--expire 7d] [--allow copy,download,fork,print,source]
                       [--password …] [--node <id>] [--space <id>] [--json]
 pagewell share list   [--json]
 pagewell share revoke <id> [--json]
@@ -139,6 +168,11 @@ pagewell share revoke <id> [--json]
 `--allow ""` and omitting `--allow` are **not the same thing**: the first means
 "explicitly turn every extra permission off", the second means "use the config
 default".
+
+`source` lets readers open the **source file** — the Markdown or HTML exactly as
+written — from the page's ⋯ menu (`?as=source`). It is off unless the author
+turns it on, here or under "Readers may" in the space settings; `copy` alone
+does not expose it.
 
 `--mode password` without `--password` generates a readable one and reports it.
 

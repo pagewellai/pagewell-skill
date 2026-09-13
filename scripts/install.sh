@@ -11,7 +11,7 @@ set -euo pipefail
 # looking at the template in the source repository, not at a published copy.
 REPO_SLUG="pagewellai/pagewell-skill"
 BRANCH="main"
-VERSION="761e692"
+VERSION="v0.1.0"
 
 BIN_DIR="${PAGEWELL_BIN_DIR:-$HOME/.local/bin}"
 BASE_URL="https://raw.githubusercontent.com/$REPO_SLUG/$BRANCH"
@@ -68,14 +68,24 @@ unsupported() {
 
 # ---------------------------------------------------------------- already there?
 
+# Where this bundle lives is remembered for `pagewell upgrade`: it pulls that
+# directory and re-runs this script, so the skill text and the binary move
+# together. A curl-piped install has no bundle on disk and records nothing.
+CONFIG_HOME="${PAGEWELL_CONFIG_HOME:-$HOME/.config/pagewell}"
+remember_bundle() {
+  [ -f "$here/SKILL.md" ] || return 0
+  mkdir -p "$CONFIG_HOME" && chmod 700 "$CONFIG_HOME" 2>/dev/null || true
+  printf 'bundle: %s\nbin: %s\n' "$here" "$1" > "$CONFIG_HOME/install.yaml"
+}
+
 # Re-running the installer after an update should upgrade, not silently do
 # nothing — that is the whole point of running it again.
 existing="$(command -v pagewell 2>/dev/null || true)"
 if [ -n "$existing" ]; then
-  cur="$("$existing" version 2>/dev/null | head -1 || echo unknown)"
+  cur="$("$existing" version 2>/dev/null | head -1 | awk '{print $2}' || echo unknown)"
   case "$cur" in
-    *"$VERSION"*) echo "Already at $VERSION: $existing"; exit 0 ;;
-    *) echo "Upgrading: $cur → $VERSION" ;;
+    "$VERSION") remember_bundle "$existing"; echo "Already at $VERSION: $existing"; exit 0 ;;
+    *) echo "Upgrading: ${cur:-unknown} → $VERSION" ;;
   esac
 fi
 
@@ -118,8 +128,14 @@ fi
 
 mkdir -p "$BIN_DIR"
 chmod +x "$tmp/$asset"
+# Windows cannot overwrite a running executable: when `pagewell upgrade` runs
+# us, the old binary is the one calling — move it aside first.
+if [ -n "$ext" ] && [ -f "$BIN_DIR/pagewell$ext" ]; then
+  mv -f "$BIN_DIR/pagewell$ext" "$BIN_DIR/pagewell$ext.old" 2>/dev/null || true
+fi
 mv "$tmp/$asset" "$BIN_DIR/pagewell$ext"
 target="$BIN_DIR/pagewell$ext"
+remember_bundle "$target"
 
 case ":$PATH:" in
   *":$BIN_DIR:"*)
