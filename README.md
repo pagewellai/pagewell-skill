@@ -7,30 +7,55 @@ artifact, check it against the template's own rules, and publish it as a link:
 a page of its own at `p.pagewell.ai/s/…`, a share link, a share code, or a
 single HTML file that opens offline.
 
-## Install the skill (Claude Code)
+## Install the skill
+
+One command, any agent — it finds the agents on this machine and installs into
+each of them:
 
 ```bash
-git clone https://github.com/pagewellai/pagewell-skill ~/.claude/skills/pagewell
-~/.claude/skills/pagewell/scripts/install.sh
+npx skills add pagewellai/pagewell-skill -g
 ```
 
-This repository **is** the skill — `SKILL.md` sits at its root and the
-`references/` next to it are what the agent loads on demand. Any agent that
-reads `SKILL.md`-style skills can use the same clone; the CLI it calls is the
-one the installer puts on your `PATH`.
+By hand: this repository **is** the skill — `SKILL.md` sits at its root and
+the `references/` next to it are what the agent loads on demand — so clone
+it into the directory your agent reads (`--depth 1`: the skill is a few
+files; the history is not):
+
+| Agent | User-level | Inside a project |
+|---|---|---|
+| Claude Code | `git clone --depth 1 https://github.com/pagewellai/pagewell-skill ~/.claude/skills/pagewell` | `.claude/skills/` |
+| Codex | `git clone --depth 1 https://github.com/pagewellai/pagewell-skill ~/.codex/skills/pagewell` | `.agents/skills/` |
+| Cursor | `git clone --depth 1 https://github.com/pagewellai/pagewell-skill ~/.cursor/skills/pagewell` | `.agents/skills/` |
+| Gemini CLI | `git clone --depth 1 https://github.com/pagewellai/pagewell-skill ~/.gemini/skills/pagewell` | `.agents/skills/` |
+| GitHub Copilot | `git clone --depth 1 https://github.com/pagewellai/pagewell-skill ~/.copilot/skills/pagewell` | `.github/skills/` or `.agents/skills/` |
+| Windsurf | `git clone --depth 1 https://github.com/pagewellai/pagewell-skill ~/.codeium/windsurf/skills/pagewell` | `.windsurf/skills/` |
+| Anything else | its skills directory | most also read `.agents/skills/` |
+
+You do not have to install the CLI yourself: the first time the agent needs it,
+`SKILL.md` has it run `scripts/install.sh`, which downloads the one binary
+this machine needs from the `binaries` branch and verifies it against
+`SHA256SUMS` before putting it on your `PATH`. To do it now:
+
+```bash
+~/.claude/skills/pagewell/scripts/install.sh    # or wherever the skill landed
+```
 
 ## Updating
 
+Two halves, each with its own command; either one tells you about the other:
+
 ```bash
-pagewell upgrade            # pulls the bundle above (if that is how it was installed) and swaps the binary
+pagewell upgrade            # the CLI: downloads the current binary, verifies it, swaps it in
+npx skills update pagewell  # the skill text, if you installed with npx skills
 pagewell upgrade --check    # just say whether there is a newer version
 ```
 
-The skill text and the binary are published together and always match, so
-`upgrade` updates both: it fast-forwards the clone and re-runs the installer,
-which verifies the new binary against `bin/SHA256SUMS` before putting it on
-your `PATH`. A copy installed with the one-line `curl` below has no clone
-to pull — `upgrade` then replaces the binary only and says so.
+Installed by `git clone` instead? `pagewell upgrade` fast-forwards that
+clone and re-runs its installer, so text and binary move together. Installed
+with `npx skills`? `pagewell upgrade` swaps the binary and reminds you to run
+`npx skills update pagewell` for the text. A copy installed with the one-line
+`curl` below has no skill on disk — `upgrade` then replaces the binary only
+and says so.
 
 You do not have to remember to check. Every command that talks to
 pagewell.ai learns the current version from the response, and when a newer one
@@ -49,8 +74,9 @@ Every publish is a release with a [semver](https://semver.org) tag, here and on
 the source repository: `vMAJOR.MINOR.PATCH`. A patch bump is fixes and text;
 a minor bump adds commands, flags or fields; a major bump is reserved for the
 day an old CLI genuinely cannot be served — there has been none. `main` is
-always the latest release; `git checkout v0.3.1` gives you exactly what was
-published under that number, binaries included. What changed is in
+always the latest release and `git checkout v0.3.1` gives you the skill text
+published under that number. The binaries live on the `binaries` branch,
+which always holds the current release only. What changed is in
 [`CHANGELOG.md`](CHANGELOG.md); where it came from is in `MANIFEST` and
 `version.json`.
 
@@ -60,9 +86,9 @@ published under that number, binaries included. What changed is in
 curl -fsSL https://raw.githubusercontent.com/pagewellai/pagewell-skill/main/scripts/install.sh | bash
 ```
 
-The installer reads `uname`, picks the matching binary from `bin/`, verifies
-it against `bin/SHA256SUMS`, and only then makes it executable. Nothing else
-is downloaded and nothing is compiled.
+The installer reads `uname`, downloads the matching binary from the
+`binaries` branch, verifies it against `SHA256SUMS`, and only then makes
+it executable. Nothing else is downloaded and nothing is compiled.
 
 | Platform | Binary | Size |
 |---|---|---|

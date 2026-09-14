@@ -39,7 +39,8 @@ Skip to `pagewell publish`. Still say it is an artifact, and read `render_mode`.
 
 ```
 0  pagewell doctor --json              not installed → scripts/install.sh
-     update.required → pagewell upgrade, then re-read SKILL.md if it says so
+     update.required → pagewell upgrade; run the skill_update command it
+       prints if any (npx skills update pagewell), then re-read SKILL.md
      update.available → same, one line to the user; do not stop for it
 0b Classify: doc or artifact
 
@@ -170,7 +171,7 @@ is needed and start it:
 
 > To give you a link I need a PageWell account — it's free (128 MiB, 3 spaces).
 > I'll start the sign-in: open **pagewell.ai/device**, enter **WDJH-4KQP**, and
-> sign in with Google or your email. A new email creates the account on the spot.
+> sign in with Google, GitHub or your email. A new email creates the account on the spot.
 
 ```
 pagewell auth login --json --wait=false    # prints the URL + code; read them out
@@ -259,7 +260,7 @@ anyone's layout. Full format and the authoring loop: `references/templates.md`.
 | `--prune` would delete things | List the exact paths, get explicit agreement, only then `--yes` |
 | `conflict` | Show what changed and ask "overwrite" or "pull first". **Never decide to overwrite on your own** |
 | `unauthenticated` | Walk them into sign-in (§Signing in) — it doubles as sign-up. Do not fail silently, do not tell them to "register first" somewhere else |
-| A line on stderr says a newer pagewell is available | Finish the step you are on, then `pagewell upgrade`, then re-read SKILL.md if it says the text changed. Say so in one line; do not ask permission for a tool update, do ask before anything that touches their content |
+| A line on stderr says a newer pagewell is available | Finish the step you are on, then `pagewell upgrade` (and the `skill_update` command it prints, if any), then re-read SKILL.md if the text changed. Say so in one line; do not ask permission for a tool update, do ask before anything that touches their content |
 | Storage is full | `pagewell usage --files 10 --json`. Suggest trash → the files marked unused → upgrade, in that order. Uploaded files count against the quota exactly like documents |
 | `plan_required` | A Free-plan limit (3 spaces · 20 live shares · 2 agent tokens · 500 pages per space · no password shares) or a template above the plan. Say which one — the message names it — and offer the cheap way out first (revoke an unused share or token, `--mode code` instead of password); hand over `pagewell.ai/pricing` second. **Never complete a payment** |
 | A public space, but a page has no `public_url` | It was set private on its own, or **taken down by PageWell** — the owner sees the reason in their workbench. Do not create shares to route around a take-down; they answer 404 too |

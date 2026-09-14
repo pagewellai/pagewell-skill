@@ -24,13 +24,15 @@ pagewell upgrade [--check] [--force] [--json]
 pagewell version [--json]
 ```
 
-Updates to the latest release. When this copy was installed from the skill
-bundle (a `git clone` of pagewell-skill), it fast-forwards that clone and
-re-runs its `scripts/install.sh`, so **SKILL.md and the binary move together**;
-the result says `skill_changed: true` when the skill text or references changed
-— re-read them before continuing. Installed some other way, it downloads the
-binary for this machine, verifies it against `bin/SHA256SUMS`, and replaces
-itself; the result then says `method: "binary"`.
+Updates to the latest release. When the skill was installed by `git clone`,
+it fast-forwards that clone and re-runs its `scripts/install.sh`, so **SKILL.md
+and the binary move together**; the result says `skill_changed: true` when the
+skill text or references changed — re-read them before continuing. Otherwise it
+downloads the binary for this machine (from the repository's `binaries` branch),
+verifies it against `SHA256SUMS`, and replaces itself; the result then says
+`method: "binary"` and, when the skill text still needs refreshing, `skill_update`
+holds the command that does it — `npx skills update pagewell` for a skill
+installed with `npx skills add`. Run it, then re-read SKILL.md.
 
 `--check` only reports (`{current, latest, min, available, required}`) and
 never changes anything. Versions are semver tags (`v0.3.1`); `version` prints

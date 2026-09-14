@@ -10,11 +10,16 @@ set -euo pipefail
 # Substituted when the bundle is published. Seeing @@…@@ below means you are
 # looking at the template in the source repository, not at a published copy.
 REPO_SLUG="pagewellai/pagewell-skill"
-BRANCH="main"
-VERSION="v0.1.0"
+BRANCH="main"          # the skill text (this file lives there)
+BIN_BRANCH="binaries"  # the binaries — a separate branch, replaced whole on every release
+VERSION="v0.1.1"
 
 BIN_DIR="${PAGEWELL_BIN_DIR:-$HOME/.local/bin}"
-BASE_URL="https://raw.githubusercontent.com/$REPO_SLUG/$BRANCH"
+# Where bin/<asset>, bin/SHA256SUMS and version.json are fetched from. The skill
+# directory itself carries no binaries — every agent copies that directory
+# whole, and six platforms' worth of executables in every copy is not worth
+# it. Override for a mirror or a test server.
+BASE_URL="${PAGEWELL_DOWNLOAD_BASE:-https://raw.githubusercontent.com/$REPO_SLUG/$BIN_BRANCH}"
 
 have() { command -v "$1" >/dev/null 2>&1; }
 die() { echo "$*" >&2; exit 1; }
@@ -46,8 +51,8 @@ case "$raw_arch" in
 esac
 asset="pagewell_${os}_${arch}${ext}"
 
-# The bundle normally arrives whole — SKILL.md, references/ and bin/ together —
-# so install from what is already on disk before reaching for the network.
+# A local build (make skill) keeps bin/ next to this script; a published skill
+# does not. Install from what is already on disk before reaching for the network.
 here="$(cd "$(dirname "$0")/.." && pwd)"
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
@@ -61,16 +66,39 @@ unsupported() {
   elif curl -fsSL "$BASE_URL/bin/SHA256SUMS" -o "$tmp/SHA256SUMS" 2>/dev/null; then
     sed 's|.*bin/|  |' "$tmp/SHA256SUMS" >&2
   else
-    echo "  see https://github.com/$REPO_SLUG/tree/$BRANCH/bin" >&2
+    echo "  see https://github.com/$REPO_SLUG/tree/$BIN_BRANCH/bin" >&2
   fi
   exit 1
 }
 
+# ---------------------------------------------------------------- which version?
+
+# A local build keeps bin/ next to this script and installs exactly $VERSION.
+# A published skill carries no binaries: what gets installed is whatever the
+# binaries branch holds right now, which is always the current release. If
+# this skill copy is older than that (a stale clone, an npx copy not yet
+# updated), the binary that arrives is newer than the text the agent is
+# reading. Nothing breaks — the CLI stays compatible with older skill text —
+# but say so, so the text gets refreshed as well.
+target="$VERSION"
+if [ ! -f "$here/bin/$asset" ]; then
+  have curl || die "Need curl to download the binary."
+  published="$(curl -fsSL "$BASE_URL/version.json" 2>/dev/null | sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' | head -1)"
+  if [ -n "$published" ]; then
+    target="$published"
+    if [ "$published" != "$VERSION" ]; then
+      echo "Note: this skill copy is $VERSION; the published binaries are $published."
+      echo "      Refresh the text too: pagewell upgrade (a git clone) or npx skills update pagewell (an npx install)."
+    fi
+  fi
+fi
+
 # ---------------------------------------------------------------- already there?
 
-# Where this bundle lives is remembered for `pagewell upgrade`: it pulls that
-# directory and re-runs this script, so the skill text and the binary move
-# together. A curl-piped install has no bundle on disk and records nothing.
+# Where this skill lives is remembered for `pagewell upgrade`: a git clone gets
+# pulled and this script re-run, so text and binary move together; an npx copy
+# is refreshed by `npx skills update`, and upgrade says so. A curl-piped
+# install has no skill on disk and records nothing.
 CONFIG_HOME="${PAGEWELL_CONFIG_HOME:-$HOME/.config/pagewell}"
 remember_bundle() {
   [ -f "$here/SKILL.md" ] || return 0
@@ -84,8 +112,8 @@ existing="$(command -v pagewell 2>/dev/null || true)"
 if [ -n "$existing" ]; then
   cur="$("$existing" version 2>/dev/null | head -1 | awk '{print $2}' || echo unknown)"
   case "$cur" in
-    "$VERSION") remember_bundle "$existing"; echo "Already at $VERSION: $existing"; exit 0 ;;
-    *) echo "Upgrading: ${cur:-unknown} → $VERSION" ;;
+    "$target") remember_bundle "$existing"; echo "Already at $target: $existing"; exit 0 ;;
+    *) echo "Upgrading: ${cur:-unknown} → $target" ;;
   esac
 fi
 
@@ -96,8 +124,7 @@ if [ -f "$here/bin/$asset" ]; then
   cp "$here/bin/$asset" "$tmp/$asset"
   sums="$here/bin/SHA256SUMS"
 else
-  have curl || die "Need curl to download the binary."
-  echo "Downloading $asset ($VERSION)"
+  echo "Downloading $asset ($target)"
   curl -fsSL "$BASE_URL/bin/$asset" -o "$tmp/$asset" 2>/dev/null || unsupported
   curl -fsSL "$BASE_URL/bin/SHA256SUMS" -o "$tmp/SHA256SUMS" \
     || die "Could not fetch SHA256SUMS from $BASE_URL/bin/"
