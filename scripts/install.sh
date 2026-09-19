@@ -12,7 +12,7 @@ set -euo pipefail
 REPO_SLUG="pagewellai/pagewell-skill"
 BRANCH="main"          # the skill text (this file lives there)
 BIN_BRANCH="binaries"  # the binaries — a separate branch, replaced whole on every release
-VERSION="v0.1.1"
+VERSION="v0.2.0"
 
 BIN_DIR="${PAGEWELL_BIN_DIR:-$HOME/.local/bin}"
 # Where bin/<asset>, bin/SHA256SUMS and version.json are fetched from. The skill
@@ -88,7 +88,7 @@ if [ ! -f "$here/bin/$asset" ]; then
     target="$published"
     if [ "$published" != "$VERSION" ]; then
       echo "Note: this skill copy is $VERSION; the published binaries are $published."
-      echo "      Refresh the text too: pagewell upgrade (a git clone) or npx skills update pagewell (an npx install)."
+      echo "      Refresh the text too: pagewell upgrade (a git clone) or npx skills update pagewell -g -y (a global npx install)."
     fi
   fi
 fi

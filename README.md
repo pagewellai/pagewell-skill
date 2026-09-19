@@ -7,6 +7,10 @@ artifact, check it against the template's own rules, and publish it as a link:
 a page of its own at `p.pagewell.ai/s/…`, a share link, a share code, or a
 single HTML file that opens offline.
 
+`pagewell publish` defaults to a public, searchable page with its own stable
+address. It does not create or join a visible Space unless you pass `--space`;
+choose `--visibility unlisted|code|password` for a restricted share instead.
+
 ## Install the skill
 
 One command, any agent — it finds the agents on this machine and installs into
@@ -42,26 +46,34 @@ this machine needs from the `binaries` branch and verifies it against
 
 ## Updating
 
-Two halves, each with its own command; either one tells you about the other:
+Every activation starts with a read-only check for both halves:
 
 ```bash
-pagewell upgrade            # the CLI: downloads the current binary, verifies it, swaps it in
-npx skills update pagewell  # the skill text, if you installed with npx skills
-pagewell upgrade --check    # just say whether there is a newer version
+pagewell doctor --json --skill-version v0.2.0
+```
+
+If either half is behind, the JSON includes the exact next command. The manual
+commands are:
+
+```bash
+pagewell upgrade                  # the CLI: downloads, verifies, and swaps the current binary
+npx skills update pagewell -g -y  # the skill text installed globally with npx skills
+pagewell upgrade --check          # just say whether there is a newer CLI version
 ```
 
 Installed by `git clone` instead? `pagewell upgrade` fast-forwards that
 clone and re-runs its installer, so text and binary move together. Installed
 with `npx skills`? `pagewell upgrade` swaps the binary and reminds you to run
-`npx skills update pagewell` for the text. A copy installed with the one-line
+`npx skills update pagewell -g -y` for the text. A copy installed with the one-line
 `curl` below has no skill on disk — `upgrade` then replaces the binary only
 and says so.
 
-You do not have to remember to check. Every command that talks to
-pagewell.ai learns the current version from the response, and when a newer one
-exists it says so once a day on stderr — never on stdout, so `--json` output
-stays clean. `pagewell doctor` reports it too (`update.available`). Set
-`PAGEWELL_NO_UPDATE_NOTICE=1` to silence the reminder.
+You do not have to remember to check. The skill runs `doctor` before each
+task and passes its own published version, so `update` covers the CLI and
+`skill_update` covers SKILL.md plus its references. Every later command that
+talks to pagewell.ai also learns the current CLI version from the response; a
+newer one is mentioned once a day on stderr — never on stdout, so `--json`
+stays clean. Set `PAGEWELL_NO_UPDATE_NOTICE=1` to silence that later reminder.
 
 Older versions keep working: the API only ever adds fields, and the server
 never refuses a request because of the CLI's version. When a version is older

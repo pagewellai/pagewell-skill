@@ -30,7 +30,7 @@ draw diagrams for. A three-step process is a `steps` block, not a flowchart.
 | id | Draws | Blocks | About |
 |---|---|---|---|
 | `mermaid` | flowcharts, sequence, gantt, class, state | ` ```mermaid ` | 2.5 MB |
-| `katex` | TeX maths | ` ```math ` | 280 KB |
+| `katex` | TeX maths | ` ```math `, `$…$`, `$$…$$` | 280 KB + fonts |
 | `echarts` | interactive charts, maps | ` ```echarts ` | 1 MB |
 | `abcjs` | music notation | ` ```abc ` | 420 KB |
 | `shiki` | syntax highlighting | code blocks | 320 KB |
@@ -50,6 +50,10 @@ flowchart LR
   A[upload] --> B[ingest] --> C[publish]
 ```
 ````
+
+For formulas, enable `katex` instead. Use `$E=mc^2$` inline, a `$$…$$`
+paragraph for display maths, or a ` ```math ` fence for a larger block. Dollar
+syntax is parsed only when `katex` is enabled, so ordinary prices remain text.
 
 Without `libs:`, the block renders as a code block with a caption saying which
 one line to add, and `pagewell check` reports it. **This is deliberate**: every

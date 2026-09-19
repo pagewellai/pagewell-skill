@@ -104,32 +104,37 @@ When you have a finished HTML document — a Claude artifact, a generated report
 a page you wrote by hand — there is no directory to sync and no config to write:
 
 ```
-pagewell publish report.html --visibility unlisted --json
+pagewell publish report.html --json
 cat report.html | pagewell publish - --title "Q3 review" --json
 ```
 
-One call: it uses the space from `.pagewell.yaml`, or `--space`, or creates one;
-uploads the file; pulls the inline images out; creates the link; prints it.
+One call: unless `--space` is explicit, it uses the account's internal Documents
+container, which is not a user-visible Space; uploads the file; pulls the inline
+images out; makes the page public/searchable; prints its stable URL. Targeting a
+Space requires Pro.
 
 ```json
-{"url": "https://p.pagewell.ai/s/7Q2MX9KD3VWZGH5N4TBPQR8S6C/report",
- "visibility": "unlisted", "share_id": "shr_…",
+{"url": "https://p.pagewell.ai/s/AbCdEfGhIjKlMnOpQrStUvWxYzAbCdEf",
+ "visibility": "public", "searchable": true,
  "render_mode": "sandbox",
  "reason": "含 <script>，将在隔离沙箱中运行；搜索引擎只能读到摘要",
  "assets_extracted": 4}
 ```
 
-When the page is public (the owner set the space or the page so), `url` is the
-page's own address instead — `https://p.pagewell.ai/s/<32 letters>`, no share —
-and `visibility` is `"public"`.
+`url` is the page's own stable address —
+`https://p.pagewell.ai/s/<32 letters>`, no share — and `visibility` is
+`"public"`. The same setting can be applied later with
+`pagewell visibility <node-id> public --json`.
 
 **Read `render_mode` out loud.** An HTML page with a `<script>` in it runs in an
 isolated frame, which means search engines see the summary and not the body.
 That is the right trade for an interactive page and the wrong one for an
 article. If they wanted an article, write Markdown — it is always indexed.
 
-`--visibility` defaults to `unlisted`: anyone with the link, nothing in search.
-Say which one you used. `--no-share` uploads without creating any link.
+`--visibility` defaults to `public`: permanent until changed, listed and
+searchable, with no expiry, code, password or per-link permissions. Use
+`unlisted`, `code` or `password` only for an explicitly restricted share.
+`--no-share` uploads privately without creating a link.
 
 ## Uploading without a document
 

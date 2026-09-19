@@ -24,7 +24,7 @@ The `--json` shape:
 | `rate_limited` | Too fast | Wait. Do not retry immediately |
 | `quota_exceeded` | Out of storage | See the order below |
 | `plan_readonly` | The account is in a read-only phase | **Nothing has been deleted.** Say so explicitly |
-| `plan_required` | The plan does not reach this: a template needs a higher plan, or a Free account hit a limit — 3 spaces, 20 active shares, 2 agent tokens, 500 pages per space, or a **password** share | Say what the limit is (the message names it); for shares or tokens suggest revoking an unused one, for password shares fall back to `--mode code`; hand over `/pricing` second. **Never complete a payment** |
+| `plan_required` | The plan does not reach this: a template needs a higher plan, or a Free account hit a limit — Spaces are Pro-only, 20 active shares, 2 agent tokens, or a **password** share | Say what the limit is (the message names it); keep ordinary documents in Documents, for shares or tokens suggest revoking an unused one, and for password shares fall back to `--mode code`; hand over `/pricing` second. **Never complete a payment** |
 | `share_expired` | The share is gone | Create a new one |
 | `internal` | Server-side failure | Report it with the `request_id` |
 

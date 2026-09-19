@@ -53,18 +53,18 @@ pins `scheme: light` when the thing exists to be printed.
 Themes do not change breakpoints. On a phone every theme collapses to one column
 with the contents in a drawer — do not pick a theme to control mobile layout.
 
-### Two switches belong to the reader, not to you
+### Reader controls stay outside the document
 
-Every page PageWell produces — the published page, `preview`, and the standalone
-`export` file — carries a reading-width switch and a light/dark switch in the
-top right. They are the reader's, stored on their device, and they persist
-across documents.
+When a current standalone PageWell export is hosted inside PageWell, its
+reading-width and appearance controls live in the PageWell top bar, never in
+the article. The default measure and gutters are the same as a Markdown reading
+page; wide is an explicit reader override. Arbitrary HTML artifacts do not get
+these controls.
 
-So do not build either one into a document, and do not promise a particular
-appearance: "it will look dark" is not something you can say. What you control
-is the measure a template asks for; wide is the reader overriding it. Both
-switches also work with JavaScript off, in the sense that the page is correct
-without them.
+Do not build either control into a document, and do not promise a particular
+appearance: "it will look dark" is not something you can say. The document must
+remain correct without JavaScript; in that state it uses the template measure
+and the reader's system color scheme.
 
 To look at one across a whole tree without editing anything:
 

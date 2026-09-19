@@ -6,16 +6,26 @@ error codes are a fixed enum that is **never translated**.
 ## doctor
 
 ```
-pagewell doctor [--json]
+pagewell doctor [--skill-version vMAJOR.MINOR.PATCH] [--json]
 ```
 
-Returns `{version, endpoint, reachable, authenticated, project_config, credentials_path, update}`.
+The skill always runs this first on every activation and passes its own
+published `metadata.version` through `--skill-version`; checking is automatic,
+read-only, and does not wait for a user request. Returns
+`{version, endpoint, reachable, authenticated,
+project_config, credentials_path, update, skill_update?}`.
 If `reachable` is false, check `--endpoint` before anything else.
 
 `update` is `{current, latest, min, available, required}`: `available` means a
 newer release exists; `required` means this copy is older than the oldest
 version still supported — commands keep working, but upgrade before going on.
 `latest` is absent when the server has not looked yet; then nothing is implied.
+
+`skill_update`, when present, is `{current, latest, available, command?}`. It
+compares the activated SKILL.md with the newer of the running CLI and the
+published release. When `available` is true, run `command` and re-read SKILL.md.
+For the global install shown in the README the command is
+`npx skills update pagewell -g -y`.
 
 ## upgrade
 
@@ -31,8 +41,12 @@ skill text or references changed — re-read them before continuing. Otherwise i
 downloads the binary for this machine (from the repository's `binaries` branch),
 verifies it against `SHA256SUMS`, and replaces itself; the result then says
 `method: "binary"` and, when the skill text still needs refreshing, `skill_update`
-holds the command that does it — `npx skills update pagewell` for a skill
+holds the command that does it — `npx skills update pagewell -g -y` for a skill
 installed with `npx skills add`. Run it, then re-read SKILL.md.
+
+If an older CLI rejects `--skill-version`, upgrade the CLI and repeat `doctor`.
+That is the only bootstrap exception; released current versions always report
+both update states in one request.
 
 `--check` only reports (`{current, latest, min, available, required}`) and
 never changes anything. Versions are semver tags (`v0.3.1`); `version` prints
@@ -79,8 +93,8 @@ Settings → Agent tokens.
 pagewell init [--source .] [--space <id>] [--title <name>] [--json]
 ```
 
-Creates a space when `--space` is omitted. Writes `.pagewell.yaml` and
-**never writes a credential into it**.
+Targets an existing Space, or creates one when `--space` is omitted. Spaces
+require Pro. Writes `.pagewell.yaml` and **never writes a credential into it**.
 
 ## publish
 
@@ -91,10 +105,11 @@ pagewell publish <file|-> [--space id] [--title t] [--path p]
                           [--extract-assets=false] [--no-share] [--json]
 ```
 
-One file in, one link out. It resolves the space (`--space` → `.pagewell.yaml`
-→ the account's **Default** space → creates one), uploads, and creates a share.
-Every account has a Default space from the day it is created; a publish without
-`--space` lands there, so do not create a space just to publish one file. `-` reads standard input, which is
+One file in, one link out. Unless `--space` is explicit, it writes to the
+account's internal **Documents** container, which is not shown as a Space;
+uploads; and makes the page public/searchable. Pass `--space` only when a Pro
+owner explicitly wants the page inside one. `.pagewell.yaml` does not redirect
+this one-file command into a Space. `-` reads standard input, which is
 what you want when the document is a string you just produced rather than a file
 on disk; with `-` the format defaults to HTML, so pass `--path draft.md` for
 Markdown.
@@ -107,20 +122,22 @@ every edit re-download all of them.
 The `--json` carries `render_mode` and `reason` — **read them out**. An HTML page
 with a `<script>` runs sandboxed, so search engines see the summary only.
 
-`--visibility` defaults to `unlisted`. `--no-share` uploads and stops, for when
-they want it somewhere but not linked yet.
+`--visibility` defaults to `public`. It is a permanent document setting, not a
+share: it has no password, expiry or per-link permissions, and the command
+returns the stable `public_url`. `--visibility unlisted|code|password` first
+keeps the page itself private and then creates the requested share. `--no-share`
+uploads and pins the page private.
 
 **Public pages already have an address.** Every space has a permanent public
 address (`address_url` on the space, `/s/<8 chars>`), and every page that is
 currently public has its own: `public_url` on the node, `/s/<32 letters>` — no
 space, no path in it, so renaming or moving the page never breaks the link.
 A space the owner has set to **public** is readable at its address with no share
-at all, and its pages show up on Explore. When the page you published is public
-and you did not ask for a specific share mode, `publish` prints the page's own
-address instead of creating a share (`"visibility": "public"` in the JSON). Pass `--visibility` explicitly to
-get a code- or password-gated link anyway. Making a space or a page public is the
-owner's decision in the browser — a token cannot do it — so never suggest it as
-a workaround for a private space; offer `--visibility unlisted` instead.
+at all, and its pages show up on Explore. `publish` defaults the page itself to
+public even inside a private Space and prints the page's own address
+(`"visibility": "public", "searchable": true` in JSON). HTML artifacts remain
+sandboxed, so search engines index their title and summary rather than the
+iframe body.
 
 **When a page has no address.** In a public space a page can still lack a
 `public_url`: either the owner set that one page private, or PageWell **took it
@@ -128,6 +145,17 @@ down** (moderation). A taken-down page answers 404 at every address and every
 share, and the owner sees the reason in their workbench. You can still push and
 edit it; you cannot route around it — do not create a share for it and call the
 problem solved.
+
+## visibility
+
+```
+pagewell visibility <node-id> public|private|inherit [--json]
+```
+
+Changes one existing document without changing its content. `public` returns
+the stable public URL and makes the page eligible for Explore, public profiles,
+sitemaps and search indexing. `private` pins it private; `inherit` follows the
+space again. This is audited and requires `space:write`.
 
 This is `init` + `push` + `share create` with the parts that only make sense for
 a directory removed. For a tree you keep in sync, use those three.
@@ -160,7 +188,7 @@ what you need to relay to the author.
 ## share
 
 ```
-pagewell share create [--mode public|unlisted|code|password]
+pagewell share create [--mode unlisted|code|password]
                       [--expire 7d] [--allow copy,download,fork,print,source]
                       [--password …] [--node <id>] [--space <id>] [--json]
 pagewell share list   [--json]
@@ -182,7 +210,7 @@ does not expose it.
 
 | The user said | Mode |
 |---|---|
-| "public", "put it online", "let people find it" | `--mode public` |
+| "public", "put it online", "let people find it" | `pagewell visibility <node-id> public` (not a share) |
 | "for my team", "internal", "don't index it" | `--mode unlisted` |
 | "a share code", "a passphrase" | `--mode code` |
 | "put a password on it" | `--mode password --password <generate one and report it>` |

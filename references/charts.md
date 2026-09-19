@@ -96,7 +96,8 @@ before pushing; a published error box is worse than a missing chart.
   (`libs: [mermaid]` in the front matter) and write a ` ```mermaid ` block. The
   declaration stays in the page for crawlers; the picture needs JavaScript, and
   the library is a download on first open. See `libraries.md`.
-- **Formulas** → enable `katex` and use a ` ```math ` block.
+- **Formulas** → enable `katex`; use `$…$` inline, a `$$…$$` paragraph, or a
+  ` ```math ` block.
 - **Interactive charts** (hover, zoom, a map) → enable `echarts`. Say the cost
   first: a chart block here costs nothing, and a bar chart does not need a
   1 MB library.

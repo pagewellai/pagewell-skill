@@ -16,12 +16,16 @@ locales: [en, zh]                 # multi-language layout: docs/{locale}/…
 default_locale: en
 
 share:                            # defaults when creating a share after push
-  mode: unlisted                  # public | unlisted | code | password
+  mode: unlisted                  # unlisted | code | password
   expire: 7d
   allow: [copy, print]
 
 endpoint: http://localhost:8787   # local development only
 ```
+
+Searchable `public` is a document visibility setting, not a share default.
+`pagewell publish` sets it by default; directory `push` never reads it from this
+file and never changes existing visibility.
 
 Built-in ignores: `.git .svn .hg node_modules .next .nuxt dist build .venv venv
 __pycache__ .DS_Store .idea .vscode vendor target .cache .wrangler .pagewell`,
