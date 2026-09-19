@@ -4,6 +4,12 @@ Every entry is a release: a semver tag here and on the source repository, one
 binary per platform on the `binaries` branch, and the `SKILL.md` that goes with it. Older CLIs keep working —
 the API only ever adds fields — but the newest is what the skill text describes.
 
+## v0.2.1 — 2026-09-19
+
+Keep the public Skill and CLI bundle aligned with the unified Reader Shell release.
+
+Source commit `d6dd59d`. Update with `pagewell upgrade`.
+
 ## v0.2.0 — 2026-09-19
 
 Default publish is public and searchable without a visible Space; standalone reader preferences; automatic skill update checks.

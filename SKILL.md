@@ -12,7 +12,7 @@ description: >
   Also for picking or writing a template, for charts and interactive blocks
   inside a document, and for managing what was already published.
 metadata:
-  version: "v0.2.0"
+  version: "v0.2.1"
 ---
 
 # PageWell
@@ -43,7 +43,7 @@ Always begin with step 0. It is the automatic update check for both this skill
 text and the CLI; do not wait for the user to ask whether an update exists.
 
 ```
-0  pagewell doctor --json --skill-version v0.2.0
+0  pagewell doctor --json --skill-version v0.2.1
                                           not installed → scripts/install.sh
      unknown --skill-version → pagewell upgrade, then run step 0 again
      skill_update.available → run skill_update.command, then re-read SKILL.md

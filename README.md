@@ -49,7 +49,7 @@ this machine needs from the `binaries` branch and verifies it against
 Every activation starts with a read-only check for both halves:
 
 ```bash
-pagewell doctor --json --skill-version v0.2.0
+pagewell doctor --json --skill-version v0.2.1
 ```
 
 If either half is behind, the JSON includes the exact next command. The manual
