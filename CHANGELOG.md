@@ -6,7 +6,7 @@ the API only ever adds fields â€” but the newest is what the skill text describe
 
 ## v0.2.2 â€” 2026-10-09
 
-A fenced block is its own declaration: write math, abc) and it renders, in pagewell preview and on the published page alike, with no libs: front matter. Inline €¦and €¦$ math still need libs: [katex]. Preview also picks up the reader's second pass: diagrams open full screen, code blocks carry a language label and a copy button, callouts are tinted cards, sub-headings use the heading typeface, and table columns follow their content.
+A fenced block is its own declaration: write a `` ```mermaid `` fence (or `` ```math ``, `` ```echarts ``, `` ```abc ``) and it renders, in `pagewell preview` and on the published page alike, with no `libs:` front matter. Inline `$â€¦$` and `$$â€¦$$` math still need `libs: [katex]`. Preview also picks up the reader's second pass: diagrams open full screen, code blocks carry a language label and a copy button, callouts are tinted cards, sub-headings use the heading typeface, and table columns follow their content.
 
 Source commit `4f792fc`. Update with `pagewell upgrade`.
 
