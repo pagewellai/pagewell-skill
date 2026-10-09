@@ -7,17 +7,20 @@ and why anyone can write one without shipping executable logic to a reading page
 ## Picking one for someone
 
 ```
-pagewell templates list --json --kind doc [--category article|resume|…] [--lang zh]
-pagewell templates list --json --kind artifact
+pagewell templates list --json [--category article|resume|explainer] [--lang zh]
 ```
+
+There are two kinds of thing: **templates** (a kind of document: its look, its
+skeleton, its brief, its checks) and **components** (blocks any document can
+use). There is no separate "theme" — a template carries its own look.
 
 **Read that rather than a list you remember.** Templates install per machine and
 get published continuously; a list carried in your head goes stale.
 
 Offer **at most three**, one clause each on why, then say which you would pick.
-People do not know these exist, and "I'd use `magazine-article` — it has a cover
-and pull quotes, which suits a piece this long" is how they find out they can
-change it.
+People do not know these exist, and "I'd use `article` with the `magazine`
+variant — it has a cover and pull quotes, which suits a piece this long" is how
+they find out they can change it.
 
 Let them look before choosing:
 
@@ -32,26 +35,27 @@ Offline (`offline: true` in the JSON) you get the built-ins plus whatever is
 installed locally. That is a usable answer — do not stop and ask the user for
 a network.
 
-## The built-in themes
+## The built-in templates
 
-| id | Reach for it when |
-|---|---|
-| `manual` *(default)* | a documentation site: many pages, arrived at by search |
-| `whitepaper` | one long piece read start to finish, or printed |
-| `reference` | API docs and manuals: dense, scanned rather than read |
-| `note` | a single page that is not part of a tree |
-| `editorial` | essays and announcements: serif, drop cap, quiet section numbers |
-| `ink` | quiet typography: no rules, space instead of lines |
+| id | variants | Reach for it when |
+|---|---|---|
+| *(none)* | — | a documentation site or a plain page: the platform look, tree of pages on the left, outline on the right |
+| `article` | `magazine` `paper` `plain` `bold` | one long piece: lead, sections, key points, author card. `magazine` adds a full-bleed cover, drop cap, numbered sections and pull quotes; `paper` is larger type and wider leading for printing; `plain` draws no lines at all |
+| `resume` | `classic` *(default)* `modern` `forest` `clay` | a one-page CV. `classic` is one column and no colour (tracker-friendly); the others add a second column, an accent rail and an optional photo |
+| `principle` | — | a running page that makes a mechanism visible (artifact mode, always sandboxed) |
 
-A theme decides appearance only. **A `doc` template is what you should pick
-first** — it also brings the skeleton, the brief, the inputs and the checks.
+`magazine-article`, `resume-classic`, `resume-modern` and the old theme names
+(`editorial`, `whitepaper`, `ink`, `note`, `manual`) still resolve — they map to
+the templates above — but write the new name.
 
-Dark mode is automatic and is not a theme; it follows the reader's system
-setting, and every theme, palette and component has a dark variant. A template
-pins `scheme: light` when the thing exists to be printed.
+Every template uses the platform's one type pairing (Open Sans + Noto Sans CJK);
+there is no serif template. Dark mode is automatic: it follows the reader's
+system setting, and every template, palette and component has a dark variant.
+A template pins `scheme: light` when the thing exists to be printed.
 
-Themes do not change breakpoints. On a phone every theme collapses to one column
-with the contents in a drawer — do not pick a theme to control mobile layout.
+Templates do not change breakpoints. On a phone every template collapses to one
+column with the contents in a drawer — do not pick a template to control mobile
+layout.
 
 ### Reader controls stay outside the document
 
@@ -69,29 +73,28 @@ and the reader's system color scheme.
 To look at one across a whole tree without editing anything:
 
 ```
-pagewell preview --template whitepaper
+pagewell preview --template article --variant paper
 ```
 
 That flag is for looking only. It changes no file and does not affect `push`.
 
-## Three kinds
+## Two kinds
 
 | kind | what it carries |
 |---|---|
-| `theme` | how a page looks: `theme.css`, `tokens.yaml`, fonts, layout skeleton |
-| `pack` | a set of components (`components/<name>/`) |
-| `doc` | **a kind of document**: Markdown or form fields; skeleton, brief, inputs, checks |
-| `artifact` | **a running page**: one HTML file. Principle explainers, playgrounds, converters. Always sandboxed. `scaffold.html` is the skeleton |
+| `template` | **a kind of document**: its look (`template.css`, `tokens.yaml`, layout), plus skeleton, brief, inputs, checks and samples. `mode` says what the author writes: `prose` (Markdown), `form` (fields), `hybrid`, or `artifact` (one running HTML page, always sandboxed, `scaffold.html` is the skeleton) |
+| `components` | a set of components (`components/<name>/`) any template can allow |
 
-Start from `doc`. A theme alone tells you nothing about what to write.
+`theme`, `doc`, `pack` and `artifact` are the old kind names and still load;
+they normalise to the two above.
 
 ## The directory
 
 ```
 my-article/
   template.yaml        id, kind, version, depends, tokens, variants, libs
-  theme.css            optional: styling on top of the theme
-  tokens.yaml          only for kind: theme
+  template.css         the look: real CSS, scoped automatically (old name theme.css still loads)
+  tokens.yaml          extra knobs beyond the platform baseline
   components/
     quote/
       component.yaml   props schema, summary, when, limits, behavior
@@ -113,18 +116,18 @@ my-article/
 
 ```yaml
 id: acme/quarterly
-kind: doc
+kind: template
 version: 2.1.0            # semver; a save must move it forward
 name: Quarterly review
 description: One page per team, numbers first.
 category: report
 lang: en
-mode: prose               # prose | form | hybrid
+mode: prose               # prose | form | hybrid | artifact
+layout: single            # single (article page) | tree (contents on the left) | wide
 depends:
-  theme: editorial@^2
   packs: [core]
 libs: []                  # hosted libraries this template enables
-tokens:                   # override the theme's defaults
+tokens:                   # override the platform baseline
   accent: indigo
   numbering: decimal
 variants:                 # named sets of overrides
@@ -137,13 +140,14 @@ min_engine: 2
 `min_plan`, price and shelf status are **not** in here. They belong to the
 library, not to the template.
 
-## Three modes
+## Four modes
 
 | mode | the author writes | reach for it when |
 |---|---|---|
 | `prose` | Markdown + components | articles, guides, reports, handbooks |
 | `form` | one YAML front matter, no body | resumes, one-pagers, profile pages — anything where the layout decides whether it is good |
 | `hybrid` | fields **and** a body | release notes, weeklies: fixed head and tail, free middle |
+| `artifact` | one self-contained HTML page | explainers, playgrounds, converters — anything that stops being itself with JS off |
 
 `form` gives the designer the whole page (`layouts/page.html`, a Mustache
 template over the data) and gives the agent one job: fill the fields. That is
@@ -156,7 +160,7 @@ Three of them are prose.
 
 ### 1. A sample that works
 
-`validate` refuses a `doc` template with no sample, and CI refuses one whose
+`validate` refuses a template with no sample, and CI refuses one whose
 sample fails its own checks. Write the sample **first** — a template you cannot
 demonstrate is a template nobody will pick.
 
@@ -238,16 +242,17 @@ Three readers: `scaffold` builds the skeleton from it, the tool kit shows each
 
 ## Tokens
 
-A theme declares its own knobs in `tokens.yaml`; every theme also inherits the
-platform baseline (typeface, measure, leading, accent, radius, rhythm, plus
-about twenty appearance switches). `pagewell templates list --json` returns the
+A template declares its own knobs in `tokens.yaml`; every template also inherits
+the platform baseline (measure, leading, accent, radius, rhythm, plus about
+twenty appearance switches). Typeface is not a knob any more: every document uses
+the platform pairing. `pagewell templates list --json` returns the
 whole vocabulary with allowed values — **read that rather than guessing**.
 
 ```yaml
 accent:  { type: color-slot, default: teal }     # one of eight palette slots
 brand:   { type: color, optional: true }         # "#0B6B63/#4FBCAF" light/dark
-heading: { type: enum, values: [serif, sans, display], default: serif }
-measure: { type: number, min: 40, max: 110, unit: ch, default: 68 }
+columns: { type: enum, values: [one, two], default: one }
+measure: { type: number, min: 40, max: 120, unit: ch, default: 120 }
 ```
 
 Types: `color-slot` `color` `enum` `number` `asset` `font` `text`. A value is
@@ -260,8 +265,8 @@ a brand colour that only works in light mode is unreadable for half your readers
 
 ## CSS
 
-A theme writes **real CSS**. Every selector is automatically scoped to the
-document container, so write `.pw-body h2`, not a prefix of your own.
+A template writes **real CSS** (`template.css`). Every selector is automatically
+scoped to the document container, so write `.pw-body h2`, not a prefix of your own.
 
 What is not allowed, and why:
 
@@ -278,7 +283,7 @@ around it. Isolation comes from the container, not from banning properties.
 ## The cascade
 
 ```
-platform baseline → theme → packs → doc → variant → brand layer → the document's own front matter
+platform baseline → template (tokens + template.css) → components → variant → brand layer → the document's own front matter
 ```
 
 Each layer writes only its differences; later wins. The whole thing is resolved
@@ -305,7 +310,7 @@ When someone says "make this our house style", "I want a template like this", or
 ```
 pagewell templates fork <src> <id>                 # start from one that works
 pagewell templates fork --from-doc draft.md <id>   # lift one out of a document
-pagewell templates new <id> --kind doc             # from scratch
+pagewell templates new <id>                        # from scratch (--mode form|artifact)
 pagewell templates edit <id>                       # pull the saved version down
 
 # then, in a loop:

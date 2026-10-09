@@ -63,7 +63,7 @@ series:
 
 | | |
 |---|---|
-| **Colours** | Eight palette slots, cycling. They live in CSS, so the same chart is correct in light mode, dark mode and all four themes. You cannot set them. |
+| **Colours** | Eight palette slots, cycling. They live in CSS, so the same chart is correct in light mode, dark mode and every template. You cannot set them. |
 | **The value axis** | Starts at zero, and only goes below when the data is negative. A truncated axis exaggerates differences; the renderer will not do it. |
 | **Axis labels** | Thinned automatically when they would collide. |
 | **Mobile** | Two SVGs are emitted, wide and narrow, and CSS picks one. Never assume the desktop layout is what a phone shows. |
@@ -92,14 +92,14 @@ before pushing; a published error box is worse than a missing chart.
 
 ## When not to use a chart block
 
-- **Flowcharts, sequence diagrams, Gantt, class diagrams** → enable `mermaid`
-  (`libs: [mermaid]` in the front matter) and write a ` ```mermaid ` block. The
+- **Flowcharts, sequence diagrams, Gantt, class diagrams** → write a
+  ` ```mermaid ` block; the fence is the declaration, no front matter needed. The
   declaration stays in the page for crawlers; the picture needs JavaScript, and
   the library is a download on first open. See `libraries.md`.
-- **Formulas** → enable `katex`; use `$…$` inline, a `$$…$$` paragraph, or a
-  ` ```math ` block.
-- **Interactive charts** (hover, zoom, a map) → enable `echarts`. Say the cost
-  first: a chart block here costs nothing, and a bar chart does not need a
+- **Formulas** → a ` ```math ` block works as is; `$…$` inline and `$$…$$`
+  paragraphs also need `libs: [katex]` in the front matter.
+- **Interactive charts** (hover, zoom, a map) → an ` ```echarts ` block. Say the
+  cost first: a chart block here costs nothing, and a bar chart does not need a
   1 MB library.
 - **Four numbers** → a table or a sentence reads better than a pie chart.
 - **Something the reader manipulates** (a slider, live data) → a ` ```embed `

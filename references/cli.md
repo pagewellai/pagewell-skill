@@ -274,11 +274,11 @@ The `--json` shape:
 
 ```json
 {"root": "docs", "docs": 12, "charts": 4, "resumes": 1, "word_count": 8130,
- "templates": {"manual": 11, "magazine-article": 1},
- "themes":    {"manual": 11, "magazine-article": 1},
+ "templates": {"": 11, "article": 1},
+ "themes":    {"": 11, "article": 1},
  "pages": [{"rel_path": "guide/intro.md", "url": "/guide/intro", "title": "…",
-            "template": "manual", "theme": "manual",
-            "template_ref": "manual@2.0.0", "variant": "", "libs": ["mermaid"],
+            "template": "", "theme": "",
+            "template_ref": "", "variant": "", "libs": ["mermaid"],
             "format": "markdown", "render_mode": "inline",
             "charts": 1, "embeds": 0,
             "word_count": 640, "reading_minutes": 3, "bytes": 4210,
@@ -297,13 +297,12 @@ agents already installed elsewhere read those, so both are filled.
 
 `theme` / `themes` are the old names for `template` / `templates` and carry the
 same values. Prefer the new ones; the old ones stay because CLIs already
-installed elsewhere read them.
+installed elsewhere read them. An empty template is the platform look.
 
 `errors` means something did not render — fix and re-run before pushing.
 `warnings` means it rendered but probably not as intended: an unknown template
-or variant name, a section outside the length the template asks for, a
-` ```mermaid ` block whose library is not enabled, more chart series than
-palette colours, an HTML document whose isolated origin local preview cannot
+or variant name, a section outside the length the template asks for, more
+chart series than palette colours, an HTML document whose isolated origin local preview cannot
 reproduce.
 
 ⚠️ **Preview only knows templates installed on this machine.** A marketplace
@@ -330,13 +329,13 @@ after deploying.
 ## templates
 
 ```
-templates list [--kind theme|pack|doc|artifact] [--category c] [--lang l] [--mine] [--json]
+templates list [--kind template|components] [--category c] [--lang l] [--mine] [--json]
 templates show <id> [--full] [--variant v] [--json]
 templates use <id> [--variant v] [--title t] [-o FILE] [--json]
 templates samples <id> [--source <sample-id>]
 templates preview <id> [--variant v]
 
-templates new <id> --kind theme|pack|doc|artifact [--from <builtin-id>] [--dir D]
+templates new <id> [--kind template|components] [--mode prose|form|artifact] [--from <builtin-id>] [--dir D]
 templates fork <src> <id> [--dir D]
 templates fork --from-doc <path> <id> [--dir D]
 templates edit <id> [--dir D] [--force]
@@ -438,7 +437,7 @@ silently does nothing is how someone concludes the feature is broken.
 pagewell themes [--json]
 ```
 
-The built-in themes plus the chart types. **Superseded by `templates list`**,
-which also shows document templates, component packs, hosted libraries and the
-token vocabulary. Kept because scripts and older SKILL copies call it; use
-`templates list` for anything new.
+The built-in templates plus the chart types. **Superseded by `templates list`**,
+which also shows components, hosted libraries and the token vocabulary. Kept
+because scripts and older SKILL copies call it; use `templates list` for
+anything new.

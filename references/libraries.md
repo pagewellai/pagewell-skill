@@ -33,16 +33,15 @@ draw diagrams for. A three-step process is a `steps` block, not a flowchart.
 | `katex` | TeX maths | ` ```math `, `$…$`, `$$…$$` | 280 KB + fonts |
 | `echarts` | interactive charts, maps | ` ```echarts ` | 1 MB |
 | `abcjs` | music notation | ` ```abc ` | 420 KB |
-| `shiki` | syntax highlighting | code blocks | 320 KB |
 
-### Enable it, or it stays a code block
+Syntax highlighting is **not** a library: fenced code with a language tag
+(` ```go `, ` ```ts `, ` ```bash `…) is highlighted on the server, with no
+download and no JavaScript. Just tag the fence.
 
-```yaml
----
-title: How ingest works
-libs: [mermaid]
----
-```
+### The fence is the declaration
+
+Write the block; nothing else is needed. A ` ```mermaid ` fence enables Mermaid
+for that document, in local preview and on the published page alike:
 
 ````
 ```mermaid
@@ -51,13 +50,13 @@ flowchart LR
 ```
 ````
 
-For formulas, enable `katex` instead. Use `$E=mc^2$` inline, a `$$…$$`
-paragraph for display maths, or a ` ```math ` fence for a larger block. Dollar
-syntax is parsed only when `katex` is enabled, so ordinary prices remain text.
+Only pages that actually contain such a block load the library, so a document
+without one costs its readers nothing.
 
-Without `libs:`, the block renders as a code block with a caption saying which
-one line to add, and `pagewell check` reports it. **This is deliberate**: every
-library is a download, and who pays for it should be an explicit decision.
+Formulas are the one exception. A ` ```math ` fence works on its own, but
+`$E=mc^2$` inline and `$$…$$` paragraphs are parsed only when the document says
+`libs: [katex]`: a dollar sign is usually a price, so dollar syntax stays plain
+text until you ask for it.
 
 ### What the reader gets
 
@@ -95,7 +94,7 @@ See `components.md` for the table.
 
 ## Animation
 
-Pure CSS animation is allowed in a theme: `@keyframes`, `animation`,
+Pure CSS animation is allowed in a template: `@keyframes`, `animation`,
 `transition`, `transform`, `filter`, and scroll-driven `animation-timeline`.
 
 Two rules:

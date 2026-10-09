@@ -9,21 +9,23 @@ summary: Up and running in three steps
 tags: [guide, setup]
 icon: 📦
 order: 1
-template: reference          # a doc template or a theme
+template: article            # a template; leave it out for the platform look
 variant: warm                # a named set of token overrides, if it has any
-libs: [mermaid]              # hosted libraries this document may use
+libs: [katex]                # only for $…$ maths; a ```mermaid or ```math fence enables its library itself
 token.accent: indigo         # override one token for this document only
 locale: en
 translation_group: guide/install
 ---
 ```
 
-`template:` takes a **doc template** (`magazine-article`) or a **theme**
-(`editorial`). A doc template brings a skeleton, a brief, required inputs and
-checks; a theme brings only appearance.
+`template:` names a **template** (`article`, `resume`, `principle`). A template
+brings its look plus a skeleton, a brief, required inputs and checks. Leave it
+out for the platform's own look. Old names (`magazine-article`, `editorial`,
+`whitepaper`...) still resolve to a template and variant; `pagewell check` tells
+you the new name.
 
-Pin a version with `template: magazine-article@2.1.0`, or follow the major with
-`@^2`. **The default is pinned**: a published piece should not change while its
+Pin a version with `template: article@3.0.0`, or follow the major with
+`@^3`. **The default is pinned**: a published piece should not change while its
 author is asleep.
 
 `libs:` is opt-in per document. Without it, a ` ```mermaid ` block renders as a
@@ -66,7 +68,7 @@ author believing they had used it.
 
 `pagewell:kind=artifact` marks a running page: always sandboxed, one HTML file,
 checked with the artifact rules. `pagewell:template` names an artifact template
-(`principle`) or, for a leftover clean HTML page, a theme. Required inputs from
+(`principle`). Required inputs from
 the template's `inputs.yaml` land as `pagewell:<front>` (here `subject`).
 
 A `doc` is Markdown with YAML front matter. Do not put `<meta>` in Markdown.

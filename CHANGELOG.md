@@ -4,6 +4,12 @@ Every entry is a release: a semver tag here and on the source repository, one
 binary per platform on the `binaries` branch, and the `SKILL.md` that goes with it. Older CLIs keep working â€”
 the API only ever adds fields â€” but the newest is what the skill text describes.
 
+## v0.2.2 â€” 2026-10-09
+
+A fenced block is its own declaration: write math, abc) and it renders, in pagewell preview and on the published page alike, with no libs: front matter. Inline €¦and €¦$ math still need libs: [katex]. Preview also picks up the reader's second pass: diagrams open full screen, code blocks carry a language label and a copy button, callouts are tinted cards, sub-headings use the heading typeface, and table columns follow their content.
+
+Source commit `4f792fc`. Update with `pagewell upgrade`.
+
 ## v0.2.1 â€” 2026-09-19
 
 Keep the public Skill and CLI bundle aligned with the unified Reader Shell release.

@@ -20,7 +20,7 @@ sandbox — that would throw away indexing for nothing.
 ## Template CSS no longer costs indexing
 
 In the previous version, any template that carried its own CSS pushed the whole
-document into the sandbox. **That is no longer true.** Theme CSS is parsed
+document into the sandbox. **That is no longer true.** Template CSS is parsed
 against a property whitelist, scoped to the document container, and the
 container is `contain: paint; isolation: isolate` — so a stylesheet cannot reach
 the page around it. We can prove it safe, so it is inlined.
@@ -73,7 +73,7 @@ rather than fetched from a CDN.
 
 ## How to explain it
 
-Default to Markdown and stay there. Charts, components, behaviours, themes,
+Default to Markdown and stay there. Charts, components, behaviours, templates,
 diagrams and even a live simulator are all available without leaving it. Publish
 a whole document as HTML only when it is genuinely one application, and then say:
 
