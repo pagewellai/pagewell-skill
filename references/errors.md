@@ -24,7 +24,7 @@ The `--json` shape:
 | `rate_limited` | Too fast | Wait. Do not retry immediately |
 | `quota_exceeded` | Out of storage | See the order below |
 | `plan_readonly` | The account is in a read-only phase | **Nothing has been deleted.** Say so explicitly |
-| `plan_required` | The plan does not reach this: a template needs a higher plan, or a Free account hit a limit — Spaces are Pro-only, 20 active shares, 2 agent tokens, or a **password** share | Say what the limit is (the message names it); keep ordinary documents in Documents, for shares or tokens suggest revoking an unused one, and for password shares fall back to `--mode code`; hand over `/pricing` second. **Never complete a payment** |
+| `plan_required` | The plan does not reach this: a template needs a higher plan, or a Free account hit a limit — Spaces are Pro-only, 20 active shares, 2 agent tokens, a **password** share, or sending to X | Say what the limit is (the message names it); keep ordinary documents in Documents, for shares or tokens suggest revoking an unused one, and for password shares fall back to `--mode code`; hand over `/pricing` second. **Never complete a payment** |
 | `share_expired` | The share is gone | Create a new one |
 | `x_not_connected` | `pagewell x draft` needs the user's permission on X, once (or X revoked it) | **Read out the link in `hint`** (also `pagewell x connect`). The user opens it in their own browser and clicks Allow. Never open it or approve it for them |
 | `x_rejected` | X refused the request; `detail` has X's own words | HTTP 403 almost always means the X account has no Premium (Articles need it). Say so and stop — do not retry in a loop |

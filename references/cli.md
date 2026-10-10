@@ -479,6 +479,13 @@ X. It only prints; it never opens the browser. Signing in to PageWell happens on
 the way if needed. One PageWell account connects one X account; connecting
 again replaces it. `x disconnect` revokes the access on X's side as well.
 
+Plans: sending to X is a **PageWell Pro** feature. On Free, `x connect` and
+`x draft` answer `plan_required` (with the pricing link) before anything is
+uploaded; `x draft --dry-run` works on every plan because it never reaches the
+server. `x status` shows `"entitled": false` on Free. A connection made on Pro
+is kept after a downgrade (nothing is deleted) and works again after upgrading;
+`x disconnect` works on any plan.
+
 Limits: 20 drafts per account per day. X Articles need X Premium on the
 connected account — without it X refuses the draft (`x_rejected`, HTTP 403).
 

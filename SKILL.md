@@ -14,7 +14,7 @@ description: >
   a finished piece into an X (Twitter) Article draft — "post this on X",
   "make it an X article", "发到 X 长文".
 metadata:
-  version: "v0.3.0"
+  version: "v0.3.1"
 ---
 
 # PageWell
@@ -45,7 +45,7 @@ Always begin with step 0. It is the automatic update check for both this skill
 text and the CLI; do not wait for the user to ask whether an update exists.
 
 ```
-0  pagewell doctor --json --skill-version v0.3.0
+0  pagewell doctor --json --skill-version v0.3.1
                                           not installed → scripts/install.sh
      unknown --skill-version → pagewell upgrade, then run step 0 again
      skill_update.available → run skill_update.command, then re-read SKILL.md
@@ -263,7 +263,8 @@ Share modes, permissions and how to hand a code over: `references/cli.md`.
 ## Sending to X (an Article draft)
 
 When they want the piece on X as a long post — "post this on X", "make it an
-X article", "发到 X 长文" — save it as a **draft** in their X account:
+X article", "发到 X 长文" — save it as a **draft** in their X account. Sending is
+a **Pro** feature; the dry run works on any plan:
 
 ```
 pagewell x draft post.md --dry-run --json   # no network: what X will get, and the warnings
@@ -279,8 +280,12 @@ inline `$…$` stays as plain LaTeX. Read the warnings out before you say it is
 done; for a diagram or chart they want as a picture, suggest a screenshot from
 `pagewell preview`, swapped in on X.
 
-The first time, the answer is `x_not_connected`. Same rule as signing in — you
-show the link, they approve:
+On a Free account, `x connect` and `x draft` (without `--dry-run`) answer
+`plan_required`: say that sending to X comes with Pro, show what the dry run
+found, and hand over `pagewell.ai/pricing`. Never complete a payment.
+
+The first time on Pro, the answer is `x_not_connected`. Same rule as signing in
+— you show the link, they approve:
 
 > To save drafts to your X account, PageWell needs your permission once. Open
 > **pagewell.ai/auth/x/drafts** (the exact link is in the hint) and choose Allow.
@@ -333,7 +338,7 @@ anyone's layout. Full format and the authoring loop: `references/templates.md`.
 | `doctor.skill_update.available` is true | Run its `command` (normally `npx skills update pagewell -g -y`), then re-read SKILL.md before continuing. This updates instructions only; it does not touch the user's content |
 | `doctor --skill-version` is unknown | The CLI predates automatic skill checks. Run `pagewell upgrade`, then repeat step 0 |
 | Storage is full | `pagewell usage --files 10 --json`. Suggest trash → the files marked unused → upgrade, in that order. Uploaded files count against the quota exactly like documents |
-| `plan_required` | A Free-plan limit (Spaces are Pro-only · 20 live shares · 2 agent tokens · no password shares) or a template above the plan. Say which one — the message names it — and offer the cheap way out first (keep it in Documents, revoke an unused share or token, or use `--mode code` instead of password); hand over `pagewell.ai/pricing` second. **Never complete a payment** |
+| `plan_required` | A Free-plan limit (Spaces are Pro-only · 20 live shares · 2 agent tokens · no password shares · no sending to X) or a template above the plan. Say which one — the message names it — and offer the cheap way out first (keep it in Documents, revoke an unused share or token, or use `--mode code` instead of password); hand over `pagewell.ai/pricing` second. **Never complete a payment** |
 | A public space, but a page has no `public_url` | It was set private on its own, or **taken down by PageWell** — the owner sees the reason in their workbench. Do not create shares to route around a take-down; they answer 404 too |
 | A document references an image | Put the file next to it and push with `--assets`. Never link to an image on someone else's host and call it done |
 | Publishing a generated HTML page | Say its `render_mode`. `sandbox` means search engines see the summary, not the body |
