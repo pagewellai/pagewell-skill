@@ -431,6 +431,57 @@ An unknown token name is an error rather than being ignored — a typo that
 silently does nothing is how someone concludes the feature is broken.
 
 
+## x (X Article drafts)
+
+```
+pagewell x draft <file.md|-> [--title t] [--cover img.png] [--dry-run] [--json]
+pagewell x connect [--wait=false] [--json]
+pagewell x status [--json]
+pagewell x disconnect [--json]
+```
+
+`x draft` turns one Markdown file into an **X Article draft** on the user's own X
+account. It never publishes — there is no command for that, on purpose; the
+user reviews the draft on X and posts it from there.
+
+`--dry-run` converts locally with the same converter the server uses, sends
+nothing and needs no sign-in. Its JSON has `title`, `blocks`, `block_kinds`,
+`images` (each with a `status`: `ok`, `inline`, `remote` = downloaded when
+sending, `missing`, `unreachable`, `too_large`, `unsupported`), `warnings`, and
+the exact `draft` body X would receive (images carry placeholder ids).
+
+What maps natively: headings (the two shallowest levels; deeper ones become
+bold lines), paragraphs with bold / italic / strikethrough / links, lists
+(nested items stay inside their parent item, one line each), quotes and
+callouts, fenced and indented code, tables, `$$…$$` and ` ```math ` formulas,
+images, `---` dividers, a paragraph that is only an X post link (embedded),
+footnotes (listed after a divider). Components: `cover` becomes the title and
+cover image, `stats` / `timeline` lists, `steps` an ordered list, `compare` and
+` ```chart ` tables, `card` / `aside` / `summary` a bold title plus their text.
+Everything else is approximated or left out **and listed in `warnings`** —
+` ```mermaid ` arrives as its source code, `embed` is left out, inline `$…$`
+stays as plain LaTeX, links to other PageWell pages become plain text.
+
+Images: relative paths are read next to the document; `https://` images are
+downloaded by the CLI (the server never fetches a URL for you); `data:` images
+travel inside the text. X takes JPG, PNG, GIF and WEBP up to 5 MB — anything
+else (SVG included) is left out with a warning. `--cover` overrides the
+` ```cover ` block's image.
+
+The `--json` result: `id` (X's draft id), `title`, `x_username`, `compose_url`
+(X's article editor; the draft is under **Drafts** there — X gives no link to a
+single draft), `blocks`, `images_uploaded`, `cover`, `warnings`, and
+`"published": false`.
+
+`x connect` prints `connect_url` and, unless `--wait=false`, waits up to ten
+minutes for the user to open it in **their own browser** and allow PageWell on
+X. It only prints; it never opens the browser. Signing in to PageWell happens on
+the way if needed. One PageWell account connects one X account; connecting
+again replaces it. `x disconnect` revokes the access on X's side as well.
+
+Limits: 20 drafts per account per day. X Articles need X Premium on the
+connected account — without it X refuses the draft (`x_rejected`, HTTP 403).
+
 ## themes
 
 ```

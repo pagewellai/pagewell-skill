@@ -4,6 +4,12 @@ Every entry is a release: a semver tag here and on the source repository, one
 binary per platform on the `binaries` branch, and the `SKILL.md` that goes with it. Older CLIs keep working —
 the API only ever adds fields — but the newest is what the skill text describes.
 
+## v0.3.0 — 2026-10-10
+
+New: pagewell x turns a Markdown file into an X Article draft and never publishes it. x draft (with --dry-run, which sends nothing), x connect, x status and x disconnect. Code, tables, formulas and images become X's native blocks; anything X has no block for is listed in warnings. SKILL: a new 'Sending to X' section; references/cli.md and errors.md cover the commands and the x_not_connected / x_rejected codes.
+
+Source commit `cde94e0`. Update with `pagewell upgrade`.
+
 ## v0.2.2 — 2026-10-09
 
 A fenced block is its own declaration: write a `` ```mermaid `` fence (or `` ```math ``, `` ```echarts ``, `` ```abc ``) and it renders, in `pagewell preview` and on the published page alike, with no `libs:` front matter. Inline `$…$` and `$$…$$` math still need `libs: [katex]`. Preview also picks up the reader's second pass: diagrams open full screen, code blocks carry a language label and a copy button, callouts are tinted cards, sub-headings use the heading typeface, and table columns follow their content.
