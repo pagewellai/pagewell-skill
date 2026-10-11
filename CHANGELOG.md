@@ -4,6 +4,12 @@ Every entry is a release: a semver tag here and on the source repository, one
 binary per platform on the `binaries` branch, and the `SKILL.md` that goes with it. Older CLIs keep working —
 the API only ever adds fields — but the newest is what the skill text describes.
 
+## v0.4.0 — 2026-10-11
+
+Public pages can now stay out of search engines. pagewell publish --no-index makes the page public but marks it noindex and keeps it off the sitemap and Explore; pagewell visibility <node-id> public --index off|on|inherit changes it for an existing page. searchable in the JSON now reports what the server resolved (page, then space, then account) instead of always true. SKILL: publishing and references/cli.md explain the switch; the README gains a 'Send an article to X' section.
+
+Source commit `e58de46`. Update with `pagewell upgrade`.
+
 ## v0.3.1 — 2026-10-10
 
 Sending articles to X is now a PageWell Pro feature. On Free, pagewell x connect and pagewell x draft stop with plan_required and the pricing link before anything is uploaded; pagewell x draft --dry-run still works on every plan. pagewell x status shows the plan state. A connection made on Pro is kept after a downgrade and can always be disconnected. SKILL: the Sending to X section and the plan_required rule say so.

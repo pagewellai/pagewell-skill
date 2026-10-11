@@ -102,7 +102,7 @@ require Pro. Writes `.pagewell.yaml` and **never writes a credential into it**.
 pagewell publish <file|-> [--space id] [--title t] [--path p]
                           [--visibility public|unlisted|code|password] [--password …]
                           [--expire 7d] [--allow copy,print]
-                          [--extract-assets=false] [--no-share] [--json]
+                          [--extract-assets=false] [--no-share] [--no-index] [--json]
 ```
 
 One file in, one link out. Unless `--space` is explicit, it writes to the
@@ -128,6 +128,13 @@ returns the stable `public_url`. `--visibility unlisted|code|password` first
 keeps the page itself private and then creates the requested share. `--no-share`
 uploads and pins the page private.
 
+Whether a public page is **searchable** is a separate switch the owner controls
+per page, per space and for the whole account (default on). `--no-index` turns it
+off for this page: it keeps its address and anyone with the link can read it, but
+it carries `noindex` and stays off the sitemap and Explore (the owner's profile
+still lists it). Without `--no-index` the page follows its space and account, so
+always read `searchable` from the JSON instead of assuming it.
+
 **Public pages already have an address.** Every space has a permanent public
 address (`address_url` on the space, `/s/<8 chars>`), and every page that is
 currently public has its own: `public_url` on the node, `/s/<32 letters>` — no
@@ -135,7 +142,8 @@ space, no path in it, so renaming or moving the page never breaks the link.
 A space the owner has set to **public** is readable at its address with no share
 at all, and its pages show up on Explore. `publish` defaults the page itself to
 public even inside a private Space and prints the page's own address
-(`"visibility": "public", "searchable": true` in JSON). HTML artifacts remain
+(`"visibility": "public", "searchable": true` in JSON — `false` when the owner
+turned search indexing off, or with `--no-index`). HTML artifacts remain
 sandboxed, so search engines index their title and summary rather than the
 iframe body.
 
@@ -149,13 +157,16 @@ problem solved.
 ## visibility
 
 ```
-pagewell visibility <node-id> public|private|inherit [--json]
+pagewell visibility <node-id> public|private|inherit [--index on|off|inherit] [--json]
 ```
 
 Changes one existing document without changing its content. `public` returns
 the stable public URL and makes the page eligible for Explore, public profiles,
 sitemaps and search indexing. `private` pins it private; `inherit` follows the
-space again. This is audited and requires `space:write`.
+space again. `--index off` keeps a public page out of search engines and Explore,
+`--index on` lets it in even when its space or account says otherwise, and
+`--index inherit` follows them again; without `--index` that setting is left as
+it is. The JSON reports `searchable`. This is audited and requires `space:write`.
 
 This is `init` + `push` + `share create` with the parts that only make sense for
 a directory removed. For a tree you keep in sync, use those three.
@@ -211,7 +222,8 @@ does not expose it.
 | The user said | Mode |
 |---|---|
 | "public", "put it online", "let people find it" | `pagewell visibility <node-id> public` (not a share) |
-| "for my team", "internal", "don't index it" | `--mode unlisted` |
+| "public, but keep it out of Google / search engines" | `pagewell visibility <node-id> public --index off` (not a share) |
+| "for my team", "internal", "only people I send it to" | `--mode unlisted` |
 | "a share code", "a passphrase" | `--mode code` |
 | "put a password on it" | `--mode password --password <generate one and report it>` |
 

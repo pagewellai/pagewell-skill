@@ -49,7 +49,7 @@ this machine needs from the `binaries` branch and verifies it against
 Every activation starts with a read-only check for both halves:
 
 ```bash
-pagewell doctor --json --skill-version v0.3.1
+pagewell doctor --json --skill-version v0.4.0
 ```
 
 If either half is behind, the JSON includes the exact next command. The manual
@@ -126,6 +126,21 @@ pagewell publish draft.md             # one link back
 Writing, checking, previewing and exporting need no account and no network.
 Signing in is only for publishing, and the agent never approves the device
 code or completes a payment for you — both happen in your own browser.
+
+## Send an article to X
+
+```bash
+pagewell x draft article.md --dry-run   # what X would get, offline, on any plan
+pagewell x connect                      # once: a link the user opens to allow PageWell on X
+pagewell x draft article.md             # an X Article draft in the user's account
+```
+
+Headings, lists, quotes, images, code blocks, tables and `$$` formulas become
+X's own blocks; what X has no block for (charts, diagrams, embeds) is
+approximated or left out, and the JSON says which. PageWell only creates the
+draft — it never publishes; the author does that on X. Sending needs PageWell
+Pro, and X itself only offers Articles to Premium accounts. The agent prints the
+connect link for the user and never approves it.
 
 ## Where things are explained
 

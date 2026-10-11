@@ -14,7 +14,7 @@ description: >
   a finished piece into an X (Twitter) Article draft — "post this on X",
   "make it an X article", "发到 X 长文".
 metadata:
-  version: "v0.3.1"
+  version: "v0.4.0"
 ---
 
 # PageWell
@@ -45,7 +45,7 @@ Always begin with step 0. It is the automatic update check for both this skill
 text and the CLI; do not wait for the user to ask whether an update exists.
 
 ```
-0  pagewell doctor --json --skill-version v0.3.1
+0  pagewell doctor --json --skill-version v0.4.0
                                           not installed → scripts/install.sh
      unknown --skill-version → pagewell upgrade, then run step 0 again
      skill_update.available → run skill_update.command, then re-read SKILL.md
@@ -218,15 +218,20 @@ cat report.html | pagewell publish - --title "Q3 review" --json
 
 It uploads into the account's internal **Documents** container (not a user-visible
 Space), pulls the inline base64 images out into files of their own, makes the page
-public and searchable, and prints its stable URL. Pass `--space` only when the Pro
+public and searchable (unless the owner turned search indexing off — `searchable` in
+the JSON says which), and prints its stable URL. Pass `--space` only when the Pro
 owner explicitly wants the page inside a Space. **Read `render_mode` out loud**:
 an artifact always sandboxes, so search engines get the summary and not the body.
 For an article, write Markdown.
 
-Publishing is public/searchable by default. For an existing page, use:
+Publishing is public/searchable by default. When the user wants it public but out
+of search engines (a résumé, a page only for people who get the link), add
+`--no-index`: the page keeps its address and stays readable, but is marked
+`noindex` and left off the sitemap and Explore. For an existing page, use:
 
 ```
-pagewell visibility <node-id> public --json   # an existing page
+pagewell visibility <node-id> public --json              # an existing page
+pagewell visibility <node-id> public --index off --json  # public, kept out of search
 ```
 
 This is not a share: it has no expiry, code or password. It gets an address of
@@ -328,7 +333,7 @@ anyone's layout. Full format and the authoring loop: `references/templates.md`.
 | Device-code sign-in | Show the link and the code. **Never approve on the user's behalf**, never open a browser and click confirm, never ask for a credential |
 | `x_not_connected` | Read out the link in the hint (or from `pagewell x connect`); they open it and click Allow in their own browser. Never open it or approve it for them |
 | Sending to X | `pagewell x draft` makes a **draft** only. Say it is waiting in X → Articles → Drafts; never say it was posted. Read every warning out |
-| Publishing one file | `pagewell publish` is public and searchable by default and does not create or join a visible Space. Use `--space` only when explicitly requested; use `--visibility unlisted|code|password` only for an explicitly restricted share |
+| Publishing one file | `pagewell publish` is public and searchable by default and does not create or join a visible Space. Read `searchable` back — the owner may have turned indexing off for their account or space. Use `--no-index` when they want it public but out of search engines; `--space` only when explicitly requested; `--visibility unlisted|code|password` only for an explicitly restricted share |
 | `engine_outdated` | `pagewell upgrade`, then retry. Do not fall back to another template — they picked that one |
 | `save` on a template other documents follow | Say so first; it reaches every document tracking `@^major` |
 | `--prune` would delete things | List the exact paths, get explicit agreement, only then `--yes` |

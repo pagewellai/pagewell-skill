@@ -110,7 +110,8 @@ cat report.html | pagewell publish - --title "Q3 review" --json
 
 One call: unless `--space` is explicit, it uses the account's internal Documents
 container, which is not a user-visible Space; uploads the file; pulls the inline
-images out; makes the page public/searchable; prints its stable URL. Targeting a
+images out; makes the page public (searchable unless the owner turned indexing
+off, or `--no-index` was passed); prints its stable URL. Targeting a
 Space requires Pro.
 
 ```json
@@ -132,7 +133,9 @@ That is the right trade for an interactive page and the wrong one for an
 article. If they wanted an article, write Markdown — it is always indexed.
 
 `--visibility` defaults to `public`: permanent until changed, listed and
-searchable, with no expiry, code, password or per-link permissions. Use
+searchable, with no expiry, code, password or per-link permissions. `--no-index`
+keeps such a page out of search engines and Explore while it stays readable by
+link. Use
 `unlisted`, `code` or `password` only for an explicitly restricted share.
 `--no-share` uploads privately without creating a link.
 
